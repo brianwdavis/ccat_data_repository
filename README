@@ -1,0 +1,17 @@
+This project uses {renv} to manage package versions. To reproduce this script,
+copy these files to a new bare directory:
+
+ - renv.lock
+ - .Rprofile
+ - /renv/activate.R
+ 
+ - CCAT code.R
+ - biomass.csv
+ - n_content.csv
+ - survival_emergence.csv
+ - time_to_flowering.csv
+ 
+You can then run `renv::restore()` at the R prompt to automatically download
+and install the same packages used in this project.
+
+All the code to reproduce the analyses in the manuscript is in `CCAT code.R`
