@@ -671,6 +671,11 @@ anova_with_var_decomp <- function(model, nullmodel, unrandom, name) {
   pct_fixed = 1 - (var(r_m) / var(r_n))
   pct_random = 1 - (var(r_n) / var(r_u))
   
+  var_comps = r2glmm::r2beta(update(model, ~.+1)) %>% 
+    as.data.frame() %>% 
+    select(term = Effect, statistic = Rsq) %>% 
+    mutate(statistic = round(statistic, 3))
+  
   rmse <- sqrt(mean(r_m^2, na.rm = T))
   mu <- mean(fitted(model) + r_m, na.rm = T)
   
@@ -692,7 +697,8 @@ anova_with_var_decomp <- function(model, nullmodel, unrandom, name) {
           "%1.3f", 
           c(pct_fixed, pct_random, rmse, rmse/mu)
           )
-      )
+      ),
+      var_comps
     ) %>% 
     magrittr::set_colnames(c("term", name))
 }
@@ -750,7 +756,18 @@ model_summaries <-
   ) %>% 
   pull(d) %>% 
   bind_cols() %>% 
-  select(-matches("term.$"))
+  select(-matches("term.$")) %>% 
+  mutate(
+    test = c(
+      "F", "F", "F",
+      "R2", "R2",
+      "", "",
+      "variance component",
+      "variance component",
+      "variance component",
+      "variance component"
+    )
+  )
 
 write.csv(model_summaries, "CCAT model summaries.csv", row.names = F)
 
